@@ -12,8 +12,15 @@ export interface SiweProviderOptions {
     userLoader?: UserLoader;
 }
 
-export interface SiweAuthConfigOptions extends SiweProviderOptions {}
+export interface SiweAuthOptions extends SiweProviderOptions {}
 
+/**
+ * Parses and verifies a SiwE message and signature.
+ * @param message - The SiwE message to parse.
+ * @param signature - The signature to verify.
+ * @returns The parsed SiwE message.
+ * @throws Error if the message is invalid or the signature is invalid.
+ */
 async function parseAndVerifyMessage(message: string, signature: string): Promise<SiweMessage> {
     const parsedMessage = parseMessage(message);
     if (!parsedMessage) {
@@ -28,6 +35,12 @@ async function parseAndVerifyMessage(message: string, signature: string): Promis
     return parsedMessage;
 }
 
+
+/**
+ * SiwE auth provider for Auth.js
+ * @param options - SiweProviderOptions
+ * @returns CredentialsConfig
+ */
 export function SiweAuthProvider(options?: SiweProviderOptions): CredentialsConfig {
     return Credentials({
         name: 'SIWE',
@@ -55,7 +68,12 @@ export function SiweAuthProvider(options?: SiweProviderOptions): CredentialsConf
 }
 
 
-export function SiweAuthConfig(options?: SiweAuthConfigOptions): ExpressAuthConfig {
+/**
+ * SiwE auth configuration for Auth.js
+ * @param options - SiweAuthOptions
+ * @returns ExpressAuthConfig
+ */
+export function makeAuthConfig(options?: SiweAuthOptions): ExpressAuthConfig {
     return {
         providers: [
             SiweAuthProvider(options)
@@ -106,6 +124,11 @@ export function SiweAuthConfig(options?: SiweAuthConfigOptions): ExpressAuthConf
 }
 
 
-export function SiweAuth(options?: SiweAuthConfigOptions) {
-    return ExpressAuth(SiweAuthConfig(options));
+/**
+ * SiwE auth handler for Express
+ * @param options - SiweAuthOptions
+ * @returns ExpressAuth
+ */
+export function SiweAuth(options?: SiweAuthOptions) {
+    return ExpressAuth(makeAuthConfig(options));
 }

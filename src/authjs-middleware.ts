@@ -2,10 +2,11 @@
 import { getSession } from "@auth/express"
 import type { NextFunction, Request, Response } from "express"
 
-import {SiweAuthConfig, SiweAuthConfigOptions} from "./siwe-auth-provider.js";
+import {makeAuthConfig, SiweAuthOptions} from "./siwe-auth-provider.js";
 
-export function authenticatedUser(authOptions: SiweAuthConfigOptions) {
-    const authConfig = SiweAuthConfig(authOptions);
+// This middleware checks if the user is authenticated and redirects to an "Access Denied" page if not.
+export function authenticatedUser(authOptions: SiweAuthOptions) {
+    const authConfig = makeAuthConfig(authOptions);
     return async ( req: Request, res: Response, next: NextFunction) => {
         const session = res.locals.session ?? (await getSession(req, authConfig)) ?? undefined
         res.locals.session = session
@@ -16,8 +17,9 @@ export function authenticatedUser(authOptions: SiweAuthConfigOptions) {
     }
 }
 
-export function currentSession(authOptions: SiweAuthConfigOptions) {
-    const authConfig = SiweAuthConfig(authOptions);
+// This middleware makes sure the session is available at res.locals.session
+export function currentSession(authOptions: SiweAuthOptions) {
+    const authConfig = makeAuthConfig(authOptions);
     return async (req: Request, res: Response, next: NextFunction) => {
         const session = (await getSession(req, authConfig)) ?? undefined
         res.locals.session = session

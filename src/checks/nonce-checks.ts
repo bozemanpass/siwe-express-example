@@ -20,6 +20,11 @@ function getSessionIdFromRequest(req: Request): string | null {
     return connectSid ? parseSessionId(connectSid) : null;
 }
 
+/**
+ * Makes sure that the nonce in the SiwE message matches the nonce stored in the session.
+ * @param sessionStore - The session store to use for retrieving the session.
+ * @returns a function that checks the nonce.
+ */
 export function matchSessionNonce(sessionStore: Store): MessageChecker {
     return (message: SiweMessage, req: Request) => {
         const sessionId = getSessionIdFromRequest(req);

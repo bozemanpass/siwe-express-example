@@ -6,7 +6,7 @@ import {generateNonce } from "simple-siwe";
 import { fileURLToPath } from 'url';
 
 import {authenticatedUser, currentSession} from "./authjs-middleware.js";
-import {SiweAuth, SiweAuthConfigOptions} from "./siwe-auth-provider.js";
+import {SiweAuth, SiweAuthOptions} from "./siwe-auth-provider.js";
 import {matchSessionNonce} from "./checks/nonce-checks.js";
 import {sameNetwork, addressListedInContract} from "./checks/eth-checks.js";
 
@@ -36,7 +36,7 @@ app.use(
 app.set('views', path.join(path.dirname(fileURLToPath(import.meta.url)), 'views'));
 app.set('view engine', 'ejs');
 
-const authOptions: SiweAuthConfigOptions = {
+const authOptions: SiweAuthOptions = {
     messageChecks: [
         // Check that the message nonce is tied to this session.
         matchSessionNonce(sessionStore)
