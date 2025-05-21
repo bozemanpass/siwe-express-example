@@ -64,14 +64,14 @@
             });
 
             if (result.status !== 200) {
-                // Show the error page as needed.
+                // Show a specific error page if we were told about it, else generic.
                 window.location = (result.url.indexOf("/siwe/auth/error") >= 0) ? result.url : "/siwe/auth/error";
             } else if (result.url.indexOf("error=CredentialsSignin") >= 0) {
-                // This error with happen if authorize() returns null.  In that case, the status can still be 200.
+                // When authorize() returns null the status can still be 200, but for our purposes it is still an error.
                 window.location = "/siwe/auth/error";
             } else {
                 // Reload the current page
-                window.location = "/";
+                window.location.reload();
             }
         }
 
@@ -90,11 +90,11 @@
             );
 
             if (result.status !== 200) {
-                // Show the error page as needed.
+                // Show a specific error page if we were told about it, else generic.
                 window.location = (result.url.indexOf("/siwe/auth/error") >= 0) ? result.url : "/siwe/auth/error";
             } else {
                 // Reload the current page
-                window.location = "/";
+                window.location.reload();
             }
         }
 
