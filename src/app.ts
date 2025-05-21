@@ -17,12 +17,14 @@ declare module 'express-session' {
 }
 
 const app = express();
-const sessionStore = new MemoryStore();
+
+// Shared Ethereum provider
 const ethProvider = new ethers.JsonRpcProvider(
     process.env.ETHEREUM_RPC_URL || "http://localhost:8545"
 );
 
 // Configure session
+const sessionStore = new MemoryStore();
 app.use(
     session({
         secret: process.env.SESSION_SECRET_KEY || 'your-secret-key',
@@ -36,13 +38,14 @@ app.use(
 app.set('views', path.join(path.dirname(fileURLToPath(import.meta.url)), 'views'));
 app.set('view engine', 'ejs');
 
+// Customize SiwE authentication options and requirements
 const authOptions: SiweAuthOptions = {
     messageChecks: [
-        // Check that the message nonce is tied to this session.
+        // Check that the message nonce is the same as the latest one tied to this session.
         matchSessionNonce(sessionStore)
     ],
     signinChecks: [
-        // Check that this is the correct chain.
+        // Check that the SiwE message chain ID is the same as our provider's chain ID.
         sameNetwork(ethProvider),
 
         // Check that the address has been whitelisted in the specified contract.
@@ -52,7 +55,7 @@ const authOptions: SiweAuthOptions = {
         )
     ],
     userLoader: async (uid: string) => {
-        // This is where you would load the user from your database, but we'll just simulate it here.
+        // This is where you would load the user from your database, but we'll just simulate that here.
         return {
             id: uid,
             name: uid,
@@ -61,7 +64,10 @@ const authOptions: SiweAuthOptions = {
     }
 };
 
+// Keep res.locals.session updated.
 app.use(currentSession(authOptions));
+
+// Attach the SiweAuth handler for all the authentication routes (signin, signout, etc.)
 app.use("/siwe/auth/*", SiweAuth(authOptions));
 
 // Home route
@@ -69,12 +75,12 @@ app.get('/', (req: Request, res: Response) => {
     res.render("index.ejs", { user: res.locals.session?.user.id });
 });
 
-// Protected route
+// Protected route (to demonstrate a route requiring authentication)
 app.get('/protected', authenticatedUser(authOptions), (req: Request, res: Response) => {
     res.render("protected.ejs", { user: res.locals.session?.user.id });
 });
 
-// nonce route
+// nonce route (needs to be called by the client before signing the SiwE message)
 app.get('/siwe/nonce', (req: Request, res: Response) => {
     const nonce = generateNonce();
     req.session.nonce = nonce;
