@@ -74,6 +74,7 @@ export function SiweAuthConfig(options?: SiweAuthConfigOptions): ExpressAuthConf
                 if (options?.signinChecks) {
                     for (const check of options.signinChecks) {
                         if (!await check(address, chainId)) {
+                            console.log(`Sign-in for address ${address} and chainId ${chainId} was REJECTED`);
                             return false;
                         }
                     }
@@ -85,6 +86,7 @@ export function SiweAuthConfig(options?: SiweAuthConfigOptions): ExpressAuthConf
                 let user;
                 if (options?.userLoader) {
                     user = await options?.userLoader(token.sub!);
+                    console.log("User loaded:", user);
                 } else {
                     user = {
                         id: token.sub!,

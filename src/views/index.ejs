@@ -8,7 +8,7 @@
             document.querySelector("#error").innerText = msg;
         }
 
-        async function siweLogin(redirect="/") {
+        async function siweLogin() {
             const { ethereum } = window;
             if (!ethereum) {
                 error("Please install MetaMask!");
@@ -64,12 +64,10 @@
             });
 
             // Reload the page
-            if (redirect) {
-                window.location = redirect;
-            }
+            window.location = redirect;
         }
 
-        async function siweLogout(redirect="/") {
+        async function siweLogout() {
             // Get csrf to make Auth.js happy
             const { csrfToken } = await fetch("/siwe/auth/csrf").then(res => res.json());
 
@@ -84,9 +82,7 @@
             );
 
             // Reload the page
-            if (redirect) {
-                window.location = redirect;
-            }
+            window.location = redirect;
         }
 
         // Attach event listeners to buttons.

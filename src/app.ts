@@ -42,7 +42,14 @@ const authOptions: SiweAuthConfigOptions = {
     signinChecks: [
         // Check that the address has been whitelisted in the contract.
         matchAddressInContract("0x2B6AFbd4F479cE4101Df722cF4E05F941523EaD9", new ethers.JsonRpcProvider("http://localhost:8545"))
-    ]
+    ],
+    userLoader: async (id: string) => {
+        // Simulate a user lookup
+        const name = id.split("0x")[1];
+        return {
+            id, name, email: name + "@example.com"
+        }
+    }
 };
 
 app.use(currentSession(authOptions));
