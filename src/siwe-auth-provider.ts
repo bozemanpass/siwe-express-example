@@ -2,6 +2,10 @@ import Credentials, { CredentialsConfig } from '@auth/core/providers/credentials
 import {ExpressAuth, ExpressAuthConfig, User} from "@auth/express";
 import {parseMessage, SiweMessage, verify} from 'simple-siwe'
 
+export type MessageChecker = (message: SiweMessage, req: Request) => Promise<boolean>;
+export type UserLoader = (id: string) => Promise<User>;
+export type SigninChecker = (address: string, chainId: number) => Promise<boolean>;
+
 export interface SiweProviderOptions {
     messageChecks?: MessageChecker[];
     signinChecks?: SigninChecker[];
@@ -9,11 +13,6 @@ export interface SiweProviderOptions {
 }
 
 export interface SiweAuthConfigOptions extends SiweProviderOptions {}
-
-
-export type MessageChecker = (message: SiweMessage, req: Request) => Promise<boolean>;
-export type UserLoader = (id: string) => Promise<User>;
-export type SigninChecker = (address: string, chainId: number) => Promise<boolean>;
 
 async function parseAndVerifyMessage(message: string, signature: string): Promise<SiweMessage> {
     const parsedMessage = parseMessage(message);

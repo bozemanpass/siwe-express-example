@@ -17,13 +17,12 @@ declare module 'express-session' {
 }
 
 const app = express();
-
 const sessionStore = new MemoryStore();
 
 // Configure session
 app.use(
     session({
-        secret: 'your-secret-key',
+        secret: process.env.SESSION_SECRET_KEY || 'your-secret-key',
         resave: false,
         saveUninitialized: false,
         store: sessionStore,
@@ -41,7 +40,12 @@ const authOptions: SiweAuthConfigOptions = {
     ],
     signinChecks: [
         // Check that the address has been whitelisted in the contract.
-        matchAddressInContract("0x2B6AFbd4F479cE4101Df722cF4E05F941523EaD9", new ethers.JsonRpcProvider("http://localhost:8545"))
+        matchAddressInContract(
+            process.env.WHITELIST_CONTRACT_ADDRESS || "0x2B6AFbd4F479cE4101Df722cF4E05F941523EaD9",
+            new ethers.JsonRpcProvider(
+                process.env.ETHEREUM_RPC_URL || "http://localhost:8545"
+            )
+        )
     ],
     userLoader: async (id: string) => {
         // Simulate a user lookup
