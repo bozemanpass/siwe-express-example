@@ -7,8 +7,8 @@ import { fileURLToPath } from 'url';
 
 import {authenticatedUser, currentSession} from "./authjs-middleware.js";
 import {SiweAuth, SiweAuthConfigOptions} from "./siwe-auth-provider.js";
-import {matchSessionNonce} from "./nonce-util.js";
-import {matchAddressInContract} from "./address-in-contract.js";
+import {matchSessionNonce} from "./checks/nonce-checks.js";
+import {sameNetwork, addressListedInContract} from "./checks/eth-checks.js";
 
 declare module 'express-session' {
     interface SessionData {
@@ -18,6 +18,9 @@ declare module 'express-session' {
 
 const app = express();
 const sessionStore = new MemoryStore();
+const ethProvider = new ethers.JsonRpcProvider(
+    process.env.ETHEREUM_RPC_URL || "http://localhost:8545"
+);
 
 // Configure session
 app.use(
@@ -39,12 +42,13 @@ const authOptions: SiweAuthConfigOptions = {
         matchSessionNonce(sessionStore)
     ],
     signinChecks: [
-        // Check that the address has been whitelisted in the contract.
-        matchAddressInContract(
+        // Check that this is the correct chain.
+        sameNetwork(ethProvider),
+
+        // Check that the address has been whitelisted in the specified contract.
+        addressListedInContract(
             process.env.WHITELIST_CONTRACT_ADDRESS || "0x2B6AFbd4F479cE4101Df722cF4E05F941523EaD9",
-            new ethers.JsonRpcProvider(
-                process.env.ETHEREUM_RPC_URL || "http://localhost:8545"
-            )
+            ethProvider
         )
     ],
     userLoader: async (uid: string) => {
