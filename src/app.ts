@@ -53,7 +53,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 // Protected route
-app.get('/', authenticatedUser(authOptions), (req: Request, res: Response) => {
+app.get('/protected', authenticatedUser(authOptions), (req: Request, res: Response) => {
     res.render("protected.ejs", { user: res.locals.session?.user.id });
 });
 
