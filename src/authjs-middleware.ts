@@ -12,7 +12,7 @@ export function authenticatedUser(authOptions: SiweAuthConfigOptions) {
         if (session) {
             return next()
         }
-        res.status(401).send();
+        res.redirect("/siwe/auth/error?error=AccessDenied");
     }
 }
 
