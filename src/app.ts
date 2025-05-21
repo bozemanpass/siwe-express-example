@@ -47,12 +47,12 @@ const authOptions: SiweAuthConfigOptions = {
             )
         )
     ],
-    userLoader: async (id: string) => {
+    userLoader: async (uid: string) => {
         // This is where you would load the user from your database, but we'll just simulate it here.
         return {
-            id,
-            name: id,
-            email: `${id}@example.com`,
+            id: uid,
+            name: uid,
+            email: `${uid}@example.com`,
         }
     }
 };
