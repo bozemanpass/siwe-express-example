@@ -85,13 +85,14 @@ export function SiweAuthConfig(options?: SiweAuthConfigOptions): ExpressAuthConf
                 let user;
                 if (options?.userLoader) {
                     user = await options?.userLoader(token.sub!);
-                    console.log("User loaded:", user);
+                    console.log("Loaded user:", user);
                 } else {
                     user = {
                         id: token.sub!,
                         name: token.sub!,
                         email: token.sub!,
                     }
+                    console.log("Constructed user:", user);
                 }
                 // @ts-ignore
                 session.user = {

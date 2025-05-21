@@ -48,10 +48,11 @@ const authOptions: SiweAuthConfigOptions = {
         )
     ],
     userLoader: async (id: string) => {
-        // Simulate a user lookup
-        const name = id.split("0x")[1];
+        // This is where you would load the user from your database, but we'll just simulate it here.
         return {
-            id, name, email: name + "@example.com"
+            id,
+            name: id,
+            email: `${id}@example.com`,
         }
     }
 };
