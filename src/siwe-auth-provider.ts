@@ -53,10 +53,16 @@ export function SiweAuthProvider(options?: SiweProviderOptions): CredentialsConf
             const parsedMessage = await parseAndVerifyMessage(message, signature);
 
             if (options?.messageChecks) {
-                for (const check of options.messageChecks) {
-                    if (!await check(parsedMessage, req)) {
-                        throw new Error('Message check failed');
+                try {
+                    for (const check of options.messageChecks) {
+                        if (!await check(parsedMessage, req)) {
+                            console.warn("Message check failed");
+                            return null;
+                        }
                     }
+                } catch (e) {
+                    console.error(e);
+                    return null;
                 }
             }
 
@@ -89,11 +95,16 @@ export function makeAuthConfig(options?: SiweAuthOptions): ExpressAuthConfig {
 
                 const { address, chainId } = parsedMessage;
                 if (options?.signinChecks) {
-                    for (const check of options.signinChecks) {
-                        if (!await check(address, chainId)) {
-                            console.log(`Sign-in for address ${address} and chainId ${chainId} was REJECTED`);
-                            return false;
+                    try {
+                        for (const check of options.signinChecks) {
+                            if (!await check(address, chainId)) {
+                                console.log(`Sign-in for address ${address} and chainId ${chainId} was REJECTED`);
+                                return false;
+                            }
                         }
+                    } catch (e) {
+                       console.error(e);
+                       return false;
                     }
                 }
 

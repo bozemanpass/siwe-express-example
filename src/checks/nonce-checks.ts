@@ -41,7 +41,7 @@ export function matchSessionNonce(sessionStore: Store): MessageChecker {
                     const nonce = session.nonce;
                     if (nonce !== message.nonce) {
                         console.log(`Nonce MISMATCH: expected ${nonce}, got ${message.nonce}`);
-                        reject(new Error("Invalid nonce"));
+                        resolve(false);
                     } else {
                         console.log(`Nonce match: ${nonce}`);
                         resolve(true);

@@ -66,6 +66,9 @@
             if (result.status !== 200) {
                 // Show the error page as needed.
                 window.location = (result.url.indexOf("/siwe/auth/error") >= 0) ? result.url : "/siwe/auth/error";
+            } else if (result.url.indexOf("error=CredentialsSignin") >= 0) {
+                // This error with happen if authorize() returns null.  In that case, the status can still be 200.
+                window.location = "/siwe/auth/error";
             } else {
                 // Reload the current page
                 window.location = "/";
@@ -104,7 +107,7 @@
     <title></title>
 </head>
 <body>
-<h1 id="error"></h1>
+<h1 id="error" style="color: red;"></h1>
 <% if (user) { %>
     <p>The current user is: <%= user %></p>
     <button id="logout">Sign-out</button>
