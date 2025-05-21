@@ -5,10 +5,10 @@ import path from 'path';
 import {generateNonce } from "simple-siwe";
 import { fileURLToPath } from 'url';
 
+import {sameNetwork, addressListedInContract} from "./checks/eth-checks.js";
+import {matchSessionNonce} from "./checks/nonce-checks.js";
 import {authenticatedUser, currentSession} from "./authjs-middleware.js";
 import {SiweAuth, SiweAuthOptions} from "./siwe-auth-provider.js";
-import {matchSessionNonce} from "./checks/nonce-checks.js";
-import {sameNetwork, addressListedInContract} from "./checks/eth-checks.js";
 
 declare module 'express-session' {
     interface SessionData {
