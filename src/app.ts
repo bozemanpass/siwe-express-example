@@ -40,6 +40,7 @@ const authOptions: SiweAuthConfigOptions = {
         matchSessionNonce(sessionStore)
     ],
     signinChecks: [
+        // Check that the address has been whitelisted in the contract.
         matchAddressInContract("0x2B6AFbd4F479cE4101Df722cF4E05F941523EaD9", new ethers.JsonRpcProvider("http://localhost:8545"))
     ]
 };
