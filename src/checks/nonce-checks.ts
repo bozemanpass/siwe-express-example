@@ -1,7 +1,8 @@
 import cookie from "cookie";
 import {Store} from "express-session";
 import {SiweMessage} from "simple-siwe";
-import {MessageChecker} from "./siwe-auth-provider";
+
+import {MessageChecker} from "../siwe-auth-provider.js";
 
 function parseSessionId(connectSid: string): string {
     if (connectSid.startsWith('s:')) {

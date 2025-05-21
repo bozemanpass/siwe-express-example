@@ -1,9 +1,9 @@
 import {ethers, Provider} from "ethers";
 
-import {SigninChecker} from "./siwe-auth-provider.js";
+import {SigninChecker} from "../siwe-auth-provider.js";
 
 // @ts-ignore
-import contractAbi from "./contracts/contracts_AddressList_sol_AddressList.abi.json" with { type: "json" };
+import contractAbi from "../contracts/contracts_AddressList_sol_AddressList.abi.json" with { type: "json" };
 
 export function sameNetwork(provider: Provider): SigninChecker {
     return async (address: string, chainId: number) => {
