@@ -1,0 +1,45 @@
+import cookie from "cookie";
+import {Store} from "express-session";
+import {SiweMessage} from "simple-siwe";
+import {MessageChecker} from "./siwe-auth-provider";
+
+function parseSessionId(connectSid: string): string {
+    if (connectSid.startsWith('s:')) {
+        return connectSid.slice(2).split('.')[0]; // Remove 's:' and split to get the session ID
+    }
+    return connectSid;
+}
+
+function getSessionIdFromRequest(req: Request): string | null {
+    const cookies = req.headers.get('cookie');
+    if (!cookies) return null;
+
+    const parsedCookies = cookie.parse(cookies);
+    const connectSid = parsedCookies['connect.sid'];
+    return connectSid ? parseSessionId(connectSid) : null;
+}
+
+export function matchSessionNonce(sessionStore: Store): MessageChecker {
+    return (message: SiweMessage, req: Request) => {
+        const sessionId = getSessionIdFromRequest(req);
+        if (!sessionId) {
+            throw new Error("Session ID not found in request");
+        }
+        return new Promise((resolve, reject) => {
+            sessionStore.get(sessionId, (err, session) => {
+                if (err) {
+                    reject(err);
+                } else if (!session) {
+                    reject(new Error("Session not found"));
+                } else {
+                    const nonce = session.nonce;
+                    if (nonce !== message.nonce) {
+                        reject(new Error("Invalid nonce"));
+                    } else {
+                        resolve(true);
+                    }
+                }
+            });
+        });
+    }
+}

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <script type="module">
+        import { prepareMessage } from 'https://cdn.jsdelivr.net/npm/simple-siwe@0.1.4/+esm'
+
+        function error(msg) {
+            document.querySelector("#error").innerText = msg;
+        }
+
+        async function siweLogin() {
+            const { ethereum } = window;
+            if (!ethereum) {
+                error("Please install MetaMask!");
+                return;
+            }
+
+            // Choose our Ethereum account
+            const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+            if (!accounts.length) {
+                error("No accounts found!");
+                return;
+            }
+            const account = accounts[0];
+
+            // Get csrf to make Auth.js happy
+            const { csrfToken } = await fetch("/siwe/auth/csrf").then(res => res.json());
+            // Get nonce to make us happy
+            const { nonce } = await fetch("/siwe/nonce").then(res => res.json());
+
+            // Prepare the message
+            const rawMessage = {
+                domain: window.location.host,
+                address: account,
+                statement: 'This is a sample statement for signing.', // Human-readable ASCII assertion
+                uri: window.location.origin,
+                version: '1.0',
+                chainId: ethereum.networkVersion,
+                nonce: nonce,
+                issuedAt: new Date().toISOString()
+            };
+
+            // Sign the message
+            const message = prepareMessage(rawMessage);
+            const signature = await ethereum.request({
+                method: 'personal_sign',
+                params: [ message, account ]
+            });
+
+            // Send the signed message to the server
+            await fetch("/siwe/auth/callback/credentials", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    csrfToken,
+                    message,
+                    signature
+                })
+            });
+
+            // Reload the page
+            window.location = "/";
+        }
+
+        async function siweLogout() {
+            // Get csrf to make Auth.js happy
+            const { csrfToken } = await fetch("/siwe/auth/csrf").then(res => res.json());
+
+            // Logout
+            await fetch("/siwe/auth/signout", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({csrfToken})
+                }
+            );
+
+            // Reload the page
+            window.location = "/";
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelector('#login')?.addEventListener("click", siweLogin);
+            document.querySelector('#logout')?.addEventListener("click", siweLogout);
+        });
+    </script>
+    <title></title>
+</head>
+<body>
+<h1 id="error"></h1>
+<% if (user) { %>
+    <p>The current user is: <%= user %></p>
+    <button id="logout">Sign-out</button>
+<% } else { %>
+    <button id="login">Sign-in with Ethereum</button>
+<% } %>
+</body>
+</html>
