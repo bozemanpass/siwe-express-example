@@ -14,7 +14,7 @@ export function sameNetwork(provider: Provider): SigninChecker {
     return async (address: string, chainId: number) => {
         const network = await provider.getNetwork();
         if (network.chainId !== BigInt(chainId)) {
-            console.log(`Chain ID mismatch: expected ${chainId}, got ${network.chainId}`);
+            console.log(`Chain ID mismatch: expected ${network.chainId}, got ${chainId}`);
             return false;
         }
         return true;

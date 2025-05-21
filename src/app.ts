@@ -38,10 +38,10 @@ app.use(
 app.set('views', path.join(path.dirname(fileURLToPath(import.meta.url)), 'views'));
 app.set('view engine', 'ejs');
 
-// Customize SiwE authentication options and requirements
+// Specify SiwE authentication checks and options
 const authOptions: SiweAuthOptions = {
     messageChecks: [
-        // Check that the message nonce is the same as the latest one tied to this session.
+        // Check that the message nonce is the same as the one tied to this session.
         matchSessionNonce(sessionStore)
     ],
     signinChecks: [
