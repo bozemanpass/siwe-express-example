@@ -8,23 +8,26 @@
             document.querySelector("#error").innerText = msg;
         }
 
-        async function siweLogin() {
+        async function siweLogin(redirect="/") {
             const { ethereum } = window;
             if (!ethereum) {
                 error("Please install MetaMask!");
                 return;
             }
 
-            // Choose our Ethereum account
+            // Find our Ethereum accounts.
             const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
             if (!accounts.length) {
                 error("No accounts found!");
                 return;
             }
+
+            // The first account is the one currently selected in MetaMask.
             const account = accounts[0];
 
             // Get csrf to make Auth.js happy
             const { csrfToken } = await fetch("/siwe/auth/csrf").then(res => res.json());
+
             // Get nonce to make us happy
             const { nonce } = await fetch("/siwe/nonce").then(res => res.json());
 
@@ -32,7 +35,7 @@
             const rawMessage = {
                 domain: window.location.host,
                 address: account,
-                statement: 'This is a sample statement for signing.', // Human-readable ASCII assertion
+                statement: 'This message is used to sign in to siwe-express-example',
                 uri: window.location.origin,
                 version: '1.0',
                 chainId: ethereum.networkVersion,
@@ -61,14 +64,16 @@
             });
 
             // Reload the page
-            window.location = "/";
+            if (redirect) {
+                window.location = redirect;
+            }
         }
 
-        async function siweLogout() {
+        async function siweLogout(redirect="/") {
             // Get csrf to make Auth.js happy
             const { csrfToken } = await fetch("/siwe/auth/csrf").then(res => res.json());
 
-            // Logout
+            // Sign out
             await fetch("/siwe/auth/signout", {
                     method: "POST",
                     headers: {
@@ -79,9 +84,12 @@
             );
 
             // Reload the page
-            window.location = "/";
+            if (redirect) {
+                window.location = redirect;
+            }
         }
 
+        // Attach event listeners to buttons.
         document.addEventListener("DOMContentLoaded", () => {
             document.querySelector('#login')?.addEventListener("click", siweLogin);
             document.querySelector('#logout')?.addEventListener("click", siweLogout);
