@@ -27,7 +27,7 @@ export function sameNetwork(provider: Provider): SigninChecker {
  * @param provider - The provider to use to call the contract.
  * @returns a function that checks if the address is listed in the contract.
  */
-export function addressListedInContract(contractAddress: string, provider: Provider): SigninChecker {
+export function addressListedInContract(contractAddress: string, provider?: Provider): SigninChecker {
     const contract = new ethers.Contract(contractAddress, contractAbi, provider);
     return async (address: string, chainId: number) => {
         const ret = await contract.isAddressInList(address);
@@ -46,7 +46,7 @@ export function addressListedInContract(contractAddress: string, provider: Provi
  * @param provider - The provider to use to check the balance.
  * @returns a function that checks if the address has the minimum required balance.
  */
-export function minimumBalanceCheck(minBalance: bigint, provider: Provider): SigninChecker {
+export function minimumBalance(minBalance: bigint, provider: Provider): SigninChecker {
     return async (address: string, chainId: number) => {
         if (minBalance <= 0n) {
             return true;
@@ -62,3 +62,9 @@ export function minimumBalanceCheck(minBalance: bigint, provider: Provider): Sig
         return false;
     }
 }
+
+/**
+ * A dummy function that always returns true.
+ * @returns true
+ */
+export const sayYes = async () => true;

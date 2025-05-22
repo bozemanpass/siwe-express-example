@@ -5,7 +5,7 @@ import path from 'path';
 import {generateNonce } from "simple-siwe";
 import { fileURLToPath } from 'url';
 
-import {sameNetwork, addressListedInContract, minimumBalanceCheck} from "./checks/eth-checks.js";
+import {sameNetwork, addressListedInContract, minimumBalance, sayYes} from "./checks/eth-checks.js";
 import {matchSessionNonce} from "./checks/nonce-checks.js";
 import {authenticatedUser, currentSession} from "./authjs-middleware.js";
 import {SiweAuth, SiweAuthOptions} from "./siwe-auth-provider.js";
@@ -46,16 +46,14 @@ const authOptions: SiweAuthOptions = {
     ],
     signinChecks: [
         // Check that the SiwE message chain ID is the same as our provider's chain ID.
-        sameNetwork(ethProvider),
+        "false" !== process.env.REQUIRE_SAME_NETWORK ? sameNetwork(ethProvider) : sayYes,
 
         // Check that the address has been whitelisted in the specified contract.
-        addressListedInContract(
-            process.env.WHITELIST_CONTRACT_ADDRESS || "0x2B6AFbd4F479cE4101Df722cF4E05F941523EaD9",
-            ethProvider
-        ),
+        process.env.WHITELIST_CONTRACT_ADDRESS ?
+            addressListedInContract(process.env.WHITELIST_CONTRACT_ADDRESS, ethProvider) : sayYes,
 
         // Check that the account has a minimum balance ("0" means no requirement).
-        minimumBalanceCheck(
+        minimumBalance(
             BigInt(process.env.MINIMUM_ACCOUNT_BALANCE || "0"),
             ethProvider
         )
