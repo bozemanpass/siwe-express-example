@@ -48,11 +48,11 @@ const authOptions: SiweAuthOptions = {
         // Check that the SiwE message chain ID is the same as our provider's chain ID.
         "false" !== process.env.REQUIRE_SAME_NETWORK ? sameNetwork(ethProvider) : sayYes,
 
-        // Check that the address has been whitelisted in the specified contract.
+        // Check that the address has been whitelisted in the specified contract (if set).
         process.env.WHITELIST_CONTRACT_ADDRESS ?
             addressListedInContract(process.env.WHITELIST_CONTRACT_ADDRESS, ethProvider) : sayYes,
 
-        // Check that the account has a minimum balance ("0" means no requirement).
+        // Check that the account has the minimum required balance (<= "0" means no requirement).
         minimumBalance(
             BigInt(process.env.MINIMUM_ACCOUNT_BALANCE || "0"),
             ethProvider
