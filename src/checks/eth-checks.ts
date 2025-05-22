@@ -39,3 +39,26 @@ export function addressListedInContract(contractAddress: string, provider: Provi
         return ret;
     }
 }
+
+/**
+ * Checks if the address has a minimum balance.
+ * @param minBalance - The minimum balance required in wei.
+ * @param provider - The provider to use to check the balance.
+ * @returns a function that checks if the address has the minimum required balance.
+ */
+export function minimumBalanceCheck(minBalance: bigint, provider: Provider): SigninChecker {
+    return async (address: string, chainId: number) => {
+        if (minBalance <= 0n) {
+            return true;
+        }
+
+        const balance = await provider.getBalance(address);
+        if (balance >= minBalance) {
+            console.log(`Address ${address} balance ${balance} >= ${minBalance}`)
+            return true;
+        }
+
+        console.log(`Address ${address} balance ${balance} less than minimum required balance ${minBalance}`)
+        return false;
+    }
+}
