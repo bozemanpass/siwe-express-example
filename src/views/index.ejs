@@ -8,13 +8,7 @@
             document.querySelector("#error").innerText = msg;
         }
 
-        async function siweLogin() {
-            const { ethereum } = window;
-            if (!ethereum) {
-                error("Please install MetaMask!");
-                return;
-            }
-
+        async function getEthAccount() {
             // Find our Ethereum accounts.
             const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
             if (!accounts.length) {
@@ -23,7 +17,18 @@
             }
 
             // The first account is the one currently selected in MetaMask.
-            const account = accounts[0];
+            return accounts[0];
+        }
+
+        async function siweLogin() {
+            const { ethereum } = window;
+            if (!ethereum) {
+                error("Please install MetaMask!");
+                return;
+            }
+
+            // Get the current, connected account.
+            const account = await getEthAccount();
 
             // Get csrf to make Auth.js happy
             const { csrfToken } = await fetch("/siwe/auth/csrf").then(res => res.json());
@@ -98,10 +103,54 @@
             }
         }
 
+        // These functions are used to whitelist and fund the address.  They are purely to make the demo
+        // easier to use.  In any real application you would not want to do this, as they are completely insecure.
+        async function whitelistAddress(event) {
+            document.querySelector("#whitelist").disabled = true;
+            const address = await getEthAccount();
+            await fetch("/faucet/whitelist", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({address})
+            });
+            document.querySelector("#whitelist").remove()
+        }
+
+        async function blacklistAddress() {
+            document.querySelector("#blacklist").disabled = true;
+            const address = await getEthAccount();
+            await fetch("/faucet/blacklist", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({address})
+            });
+            await siweLogout();
+        }
+
+        async function faucet() {
+            document.querySelector("#faucet").disabled = true;
+            const address = await getEthAccount();
+            await fetch("/faucet/fund", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({address})
+            });
+            document.querySelector("#faucet").remove();
+        }
+
         // Attach event listeners to buttons.
         document.addEventListener("DOMContentLoaded", () => {
             document.querySelector('#login')?.addEventListener("click", siweLogin);
             document.querySelector('#logout')?.addEventListener("click", siweLogout);
+            document.querySelector('#whitelist')?.addEventListener("click", whitelistAddress);
+            document.querySelector('#blacklist')?.addEventListener("click", blacklistAddress);
+            document.querySelector('#faucet')?.addEventListener("click", faucet);
         });
     </script>
     <title></title>
@@ -111,8 +160,11 @@
 <% if (user) { %>
     <p>The current user is: <%= user %></p>
     <button id="logout">Sign-out</button>
+    <button id="blacklist">Blacklist Address</button>
 <% } else { %>
     <button id="login">Sign-in with Ethereum</button>
+    <button id="whitelist">Whitelist Address</button>
+    <button id="faucet">Fund Address</button>
 <% } %>
 </body>
 </html>

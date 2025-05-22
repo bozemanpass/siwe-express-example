@@ -4,7 +4,7 @@ import {parseMessage, SiweMessage, verify} from 'simple-siwe'
 
 export type MessageChecker = (message: SiweMessage, req: Request) => Promise<boolean>;
 export type UserLoader = (id: string) => Promise<User>;
-export type SigninChecker = (address: string, chainId: number) => Promise<boolean>;
+export type SigninChecker = (address: string, chainId: bigint) => Promise<boolean>;
 
 export interface SiweProviderOptions {
     messageChecks?: MessageChecker[];
@@ -97,7 +97,7 @@ export function makeAuthConfig(options?: SiweAuthOptions): ExpressAuthConfig {
                 if (options?.signinChecks) {
                     try {
                         for (const check of options.signinChecks) {
-                            if (!await check(address, chainId)) {
+                            if (!await check(address, BigInt(chainId))) {
                                 console.log(`Sign-in for address ${address} and chainId ${chainId} was REJECTED`);
                                 return false;
                             }

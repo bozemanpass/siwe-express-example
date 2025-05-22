@@ -11,9 +11,9 @@ import contractAbi from "../contracts/contracts_AddressList_sol_AddressList.abi.
  * @returns a function that checks if the chain IDs match.
  */
 export function sameNetwork(provider: Provider): SigninChecker {
-    return async (address: string, chainId: number) => {
+    return async (address: string, chainId: bigint) => {
         const network = await provider.getNetwork();
-        if (network.chainId !== BigInt(chainId)) {
+        if (network.chainId !== chainId) {
             console.log(`Chain ID mismatch: expected ${network.chainId}, got ${chainId}`);
             return false;
         }
@@ -29,7 +29,7 @@ export function sameNetwork(provider: Provider): SigninChecker {
  */
 export function addressListedInContract(contractAddress: string, provider?: Provider): SigninChecker {
     const contract = new ethers.Contract(contractAddress, contractAbi, provider);
-    return async (address: string, chainId: number) => {
+    return async (address: string, chainId: bigint) => {
         const ret = await contract.isAddressInList(address);
         if (ret) {
             console.log(`Address ${address} is in contract ${contractAddress} on chain ${chainId}`)
@@ -47,7 +47,7 @@ export function addressListedInContract(contractAddress: string, provider?: Prov
  * @returns a function that checks if the address has the minimum required balance.
  */
 export function minimumBalance(minBalance: bigint, provider: Provider): SigninChecker {
-    return async (address: string, chainId: number) => {
+    return async (address: string, chainId: bigint) => {
         if (minBalance <= 0n) {
             return true;
         }

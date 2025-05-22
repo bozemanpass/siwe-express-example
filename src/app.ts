@@ -10,6 +10,8 @@ import {matchSessionNonce} from "./checks/nonce-checks.js";
 import {authenticatedUser, currentSession} from "./authjs-middleware.js";
 import {SiweAuth, SiweAuthOptions} from "./siwe-auth-provider.js";
 
+import {faucet, whitelistAddress, blacklistAddress} from "./demo/faucet.js";
+
 declare module 'express-session' {
     interface SessionData {
         nonce: string;
@@ -22,6 +24,10 @@ const app = express();
 const ethProvider = new ethers.JsonRpcProvider(
     process.env.ETHEREUM_RPC_URL || "http://localhost:8545"
 );
+
+
+// Configure middleware to parse JSON.
+app.use(express.json());
 
 // Configure session
 const sessionStore = new MemoryStore();
@@ -89,6 +95,52 @@ app.get('/siwe/nonce', (req: Request, res: Response) => {
     const nonce = generateNonce();
     req.session.nonce = nonce;
     res.json({nonce});
+});
+
+
+// These routes are simply to make the SiwE demo easy to use.
+// They are completely insecure and unauthenticated.
+app.post('/faucet/whitelist', async (req: Request, res: Response) => {
+    const { address } = req.body;
+    if (!address) {
+        return res.status(400).json({ error: 'Address is required' });
+    }
+
+    try {
+        await whitelistAddress(address, ethProvider);
+        res.status(200).json({ "ok": true });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ "ok": false, error: e });
+    }
+});
+
+app.post('/faucet/blacklist', async (req: Request, res: Response) => {
+    const { address } = req.body;
+    if (!address) {
+        return res.status(400).json({ error: 'Address is required' });
+    }
+    try {
+        await blacklistAddress(address, ethProvider);
+        res.status(200).json({ "ok": true });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ "ok": false, error: e });
+    }
+});
+
+app.post('/faucet/fund', async (req: Request, res: Response) => {
+    const { address } = req.body;
+    if (!address) {
+        return res.status(400).json({ error: 'Address is required' });
+    }
+    try {
+        await faucet(address, ethProvider);
+        res.status(200).json({ "ok": true });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ "ok": false, error: e });
+    }
 });
 
 // Start the server
