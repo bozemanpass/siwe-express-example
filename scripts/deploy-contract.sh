@@ -9,6 +9,17 @@ if [[ -f "${BPI_SO_DEPLOYMENT_DIR}/.init_complete" ]]; then
   exit 0
 fi
 
+while true; do
+  stack manage --dir ${BPI_SO_DEPLOYMENT_DIR} ps | grep "-siwe-" | grep -i "running"
+  if [ $? -eq 0 ]; then
+    echo "Stack is running, proceeding with contract deployment."
+    break
+  else
+    echo "Stack is not running yet, waiting for it to start..."
+    sleep 5
+  fi
+done
+
 EXEC_CMD="stack manage --dir ${BPI_SO_DEPLOYMENT_DIR} exec siwe"
 
 # Check if the stack is running in fixturenet
