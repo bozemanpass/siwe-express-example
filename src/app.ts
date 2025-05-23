@@ -29,6 +29,9 @@ const ethProvider = new ethers.JsonRpcProvider(
 // Configure middleware to parse JSON.
 app.use(express.json());
 
+// Configure static file serving.
+app.use(express.static(path.join(path.dirname(fileURLToPath(import.meta.url)), 'public')));
+
 // Configure session
 const sessionStore = new MemoryStore();
 app.use(

@@ -1,8 +1,9 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <title>SiwE Example</title>
     <script type="module">
-        import { prepareMessage } from 'https://cdn.jsdelivr.net/npm/simple-siwe@0.1.4/+esm'
+        import {prepareMessage} from 'https://cdn.jsdelivr.net/npm/simple-siwe@0.1.4/+esm'
 
         function error(msg) {
             document.querySelector("#error").innerText = msg;
@@ -10,7 +11,7 @@
 
         async function getEthAccount() {
             // Find our Ethereum accounts.
-            const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+            const accounts = await ethereum.request({method: 'eth_requestAccounts'});
             if (!accounts.length) {
                 error("No accounts found!");
                 return;
@@ -21,7 +22,7 @@
         }
 
         async function siweLogin() {
-            const { ethereum } = window;
+            const {ethereum} = window;
             if (!ethereum) {
                 error("Please install MetaMask!");
                 return;
@@ -31,10 +32,10 @@
             const account = await getEthAccount();
 
             // Get csrf to make Auth.js happy
-            const { csrfToken } = await fetch("/siwe/auth/csrf").then(res => res.json());
+            const {csrfToken} = await fetch("/siwe/auth/csrf").then(res => res.json());
 
             // Get nonce to make us happy
-            const { nonce } = await fetch("/siwe/nonce").then(res => res.json());
+            const {nonce} = await fetch("/siwe/nonce").then(res => res.json());
 
             // Prepare the message
             const rawMessage = {
@@ -52,7 +53,7 @@
             const message = prepareMessage(rawMessage);
             const signature = await ethereum.request({
                 method: 'personal_sign',
-                params: [ message, account ]
+                params: [message, account]
             });
 
             // Send the signed message to the server
@@ -82,7 +83,7 @@
 
         async function siweLogout() {
             // Get csrf to make Auth.js happy
-            const { csrfToken } = await fetch("/siwe/auth/csrf").then(res => res.json());
+            const {csrfToken} = await fetch("/siwe/auth/csrf").then(res => res.json());
 
             // Sign out
             const result = await fetch("/siwe/auth/signout", {
@@ -153,18 +154,115 @@
             document.querySelector('#faucet')?.addEventListener("click", faucet);
         });
     </script>
-    <title></title>
+    <style>
+        body {
+            font-family: Rajdhani, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff; /* White background */
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            background: #000000; /* Grey/blue background for the box */
+            border-radius: 15px; /* Rounded edges */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding-top: 15px;
+            padding-bottom: 15px;
+            min-height: 420px;
+            width: 700px;
+        }
+
+        button {
+            background-color: #000000; /* Medium blue/gray for buttons */
+            color: #edf2f7; /* Light text color */
+            border: white 2px solid;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 0;
+            cursor: pointer;
+            margin: 10px auto; /* Center the button */
+            transition: background-color 0.3s ease;
+            display: block; /* Ensure buttons are on their own row */
+            width: 100%; /* Full width for larger buttons */
+            max-width: 230px; /* Limit the width */
+            text-align: center;
+            font-variant: all-petite-caps;
+        }
+
+        button.major {
+            height: 3.5em;
+        }
+
+        button.small {
+            border: white 1px solid;
+            font-size: 0.9rem; /* Smaller font size for smaller buttons */
+            padding: 8px 16px;
+            max-width: 170px; /* Smaller width for smaller buttons */
+        }
+
+        button:hover {
+            transform: scale(1.1); /* Grow the button by 10% */
+            transition: transform 0.2s ease, background-color 0.3s ease; /* Smooth transition */
+        }
+
+        button:disabled {
+            color: #a0aec0; /* Muted gray for disabled buttons */
+            border-color: #a0aec0;
+            cursor: not-allowed;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center; /* Center the group */
+            gap: 10px; /* Space between buttons */
+        }
+
+        a {
+            color: #a0aec0; /* Light blue for links */
+        }
+
+        #error {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #e53e3e; /* Red for error messages */
+        }
+
+        .user {
+            color: white;
+        }
+
+        .footer {
+            margin-top: 1em;
+        }
+    </style>
 </head>
 <body>
-<h1 id="error" style="color: red;"></h1>
-<% if (user) { %>
-    <p>The current user is: <%= user %></p>
-    <button id="logout">Sign-out</button>
-    <button id="blacklist">Blacklist Address</button>
-<% } else { %>
-    <button id="login">Sign-in with Ethereum</button>
-    <button id="whitelist">Whitelist Address</button>
-    <button id="faucet">Fund Address</button>
-<% } %>
+<div class="container">
+    <img style="width: 100%" src="images/Gemini_Generated_Image_6pqg396pqg396pqg.png"/>
+    <% if (user) { %>
+        <p class="user">The current user is: <%= user %></p>
+        <button id="logout" class="major">Sign-out</button>
+        <div class="button-group">
+            <button id="blacklist" class="small">Blacklist Address</button>
+        </div>
+    <% } else { %>
+        <button id="login" class="major">Sign-in with Ethereum</button>
+        <div class="button-group">
+            <button id="whitelist" class="small">Whitelist Address</button>
+            <button id="faucet" class="small">Fund Address</button>
+        </div>
+    <% } %>
+    <h2 id="error" class="error"></h2>
+    <div class="footer">
+        <a href="https://eips.ethereum.org/EIPS/eip-4361">EIP-4361</a>
+    </div>
+</div>
 </body>
 </html>
