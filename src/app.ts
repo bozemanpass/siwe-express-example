@@ -147,7 +147,8 @@ app.post('/faucet/fund', async (req: Request, res: Response) => {
 });
 
 // Start the server
-const PORT = process.env.PORT || 3200;
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+const LISTEN_PORT = parseInt(process.env.LISTEN_PORT || "3200");
+const LISTEN_ADDR = process.env.LISTEN_ADDR || "0.0.0.0";
+app.listen(LISTEN_PORT, LISTEN_ADDR, () => {
+    console.log(`Server is running on http://${LISTEN_ADDR}:${LISTEN_PORT}`);
 });

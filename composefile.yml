@@ -1,0 +1,8 @@
+services:
+  siwe:
+    image: bpi/siwe-express-example:stack
+    environment:
+      REQUIRE_WHITELISTED_ACCOUNTS: true
+    build: .
+    ports:
+      - "3200"
