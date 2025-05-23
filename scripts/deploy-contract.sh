@@ -10,7 +10,7 @@ if [[ -f "${BPI_SO_DEPLOYMENT_DIR}/.init_complete" ]]; then
 fi
 
 while true; do
-  stack manage --dir ${BPI_SO_DEPLOYMENT_DIR} ps | grep "\-siwe\-"
+  stack manage --dir ${BPI_SO_DEPLOYMENT_DIR} status | grep "\-siwe\-" | grep -i 'running'
   if [ $? -eq 0 ]; then
     echo "Stack is running, proceeding with contract deployment."
     break
