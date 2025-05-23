@@ -25,6 +25,8 @@ const ethProvider = new ethers.JsonRpcProvider(
     process.env.ETHEREUM_RPC_URL || "http://localhost:8545"
 );
 
+// Allow for proxies
+app.enable('trust proxy');
 
 // Configure middleware to parse JSON.
 app.use(express.json());
