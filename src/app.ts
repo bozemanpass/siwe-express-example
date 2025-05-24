@@ -49,6 +49,10 @@ app.use(
 app.set('views', path.join(path.dirname(fileURLToPath(import.meta.url)), 'views'));
 app.set('view engine', 'ejs');
 
+const sameNetworkRequired = "false" !== process.env.REQUIRE_SAME_NETWORK;
+const whitelistRequired = !!process.env.WHITELIST_CONTRACT_ADDRESS;
+const minimumBalanceRequired = BigInt(process.env.MINIMUM_ACCOUNT_BALANCE || "0") > BigInt(0);
+
 // Specify SiwE authentication checks and options
 const authOptions: SiweAuthOptions = {
     messageChecks: [
@@ -57,17 +61,14 @@ const authOptions: SiweAuthOptions = {
     ],
     signinChecks: [
         // Check that the SiwE message chain ID is the same as our provider's chain ID.
-        "false" !== process.env.REQUIRE_SAME_NETWORK ? sameNetwork(ethProvider) : sayYes,
+        sameNetworkRequired ? sameNetwork(ethProvider) : sayYes,
 
         // Check that the address has been whitelisted in the specified contract (if set).
-        process.env.WHITELIST_CONTRACT_ADDRESS ?
-            addressListedInContract(process.env.WHITELIST_CONTRACT_ADDRESS, ethProvider) : sayYes,
+        whitelistRequired ? addressListedInContract(process.env.WHITELIST_CONTRACT_ADDRESS!, ethProvider) : sayYes,
 
         // Check that the account has the minimum required balance (<= "0" means no requirement).
-        minimumBalance(
-            BigInt(process.env.MINIMUM_ACCOUNT_BALANCE || "0"),
-            ethProvider
-        )
+        minimumBalanceRequired ?
+            minimumBalance(BigInt(process.env.MINIMUM_ACCOUNT_BALANCE!), ethProvider) : sayYes
     ],
     userLoader: async (uid: string) => {
         // This is where you would load the user from your database, but we'll just simulate that here.
@@ -87,7 +88,12 @@ app.use("/siwe/auth/*", SiweAuth(authOptions));
 
 // Home route
 app.get('/', (req: Request, res: Response) => {
-    res.render("index.ejs", { user: res.locals.session?.user.id });
+    res.render("index.ejs", {
+        user: res.locals.session?.user.id,
+        whitelistRequired,
+        sameNetworkRequired,
+        minimumBalanceRequired,
+    });
 });
 
 // Protected route (to demonstrate a route requiring authentication)
