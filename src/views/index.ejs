@@ -250,7 +250,9 @@
         <p class="user">The current user is: <%= user %></p>
         <button id="logout" class="major">Sign-out</button>
         <div class="button-group">
-            <button id="blacklist" class="small">Blacklist Address</button>
+            <% if (whitelistRequired) { %>
+                <button id="blacklist" class="small">Blacklist Address</button>
+            <% } %>
         </div>
     <% } else { %>
         <button id="login" class="major">Sign-in with Ethereum</button>
