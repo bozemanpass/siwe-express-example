@@ -2,7 +2,7 @@ import {ethers, Provider} from "ethers";
 
 import {SigninChecker} from "../siwe-auth-provider.js";
 
-// @ts-ignore
+// @ts-expect-error  This path will be correct at runtime, but not at build time.
 import contractAbi from "../contracts/contracts_AddressList_sol_AddressList.abi.json" with { type: "json" };
 
 /**
@@ -47,7 +47,7 @@ export function addressListedInContract(contractAddress: string, provider?: Prov
  * @returns a function that checks if the address has the minimum required balance.
  */
 export function minimumBalance(minBalance: bigint, provider: Provider): SigninChecker {
-    return async (address: string, chainId: bigint) => {
+    return async (address: string) => {
         if (minBalance <= 0n) {
             return true;
         }

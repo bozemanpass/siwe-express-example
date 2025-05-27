@@ -1,6 +1,6 @@
 import {ethers, Provider} from "ethers";
 
-// @ts-ignore
+// @ts-expect-error  This path will be correct at runtime, but not at build time.
 import contractAbi from "../contracts/contracts_AddressList_sol_AddressList.abi.json" with { type: "json" };
 
 
