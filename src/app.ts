@@ -103,10 +103,6 @@ app.get("/error", (req: Request, res: Response) => {
     res.render("error.ejs", {
         user: res.locals?.session?.user.id,
         error: error,
-        whitelistContractAddress: process.env.WHITELIST_CONTRACT_ADDRESS,
-        whitelistRequired,
-        sameNetworkRequired,
-        minimumBalanceRequired,
     });
 });
 
