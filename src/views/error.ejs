@@ -8,7 +8,7 @@
 <div class="container">
     <img style="width: 100%" src="images/Gemini_Generated_Image_6pqg396pqg396pqg.png"/>
     <% if (error?.name == "whitelist") { %>
-        <h2 id="error" class="error">Access Denied: This address has not whitelisted by <%= whitelistContractAddress %>>.</h2>
+        <h2 id="error" class="error">Access Denied: This address has not whitelisted by <%= whitelistContractAddress %>.</h2>
     <% } else if (error?.name == "minBalance") { %>
         <h2 id="error" class="error">Access Denied: This address does not have the minimum required balance.</h2>
     <% } else { %>
