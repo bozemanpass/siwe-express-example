@@ -44,25 +44,14 @@ export class SiweAccessDenied extends AccessDenied {
     }
 }
 
+
 /**
- * Parses and verifies a SiwE message and signature.
- * @param message - The SiwE message to parse.
- * @param signature - The signature to verify.
- * @returns The parsed SiwE message.
- * @throws Error if the message is invalid or the signature is invalid.
+ * SiwE auth handler for Express
+ * @param options - SiweAuthOptions
+ * @returns ExpressAuth
  */
-async function parseAndVerifyMessage(message: string, signature: string): Promise<SiweMessage> {
-    const parsedMessage = parseMessage(message);
-    if (!parsedMessage) {
-        throw new Error("Invalid message");
-    }
-
-    const isValid = await verify({message, signature});
-    if (!isValid) {
-        throw new Error("Invalid signature");
-    }
-
-    return parsedMessage;
+export function SiweAuth(options: SiweAuthOptions) {
+    return ExpressAuth(makeAuthConfig(options));
 }
 
 
@@ -169,12 +158,24 @@ export function makeAuthConfig(options: SiweAuthOptions): ExpressAuthConfig {
 
 
 /**
- * SiwE auth handler for Express
- * @param options - SiweAuthOptions
- * @returns ExpressAuth
+ * Parses and verifies a SiwE message and signature.
+ * @param message - The SiwE message to parse.
+ * @param signature - The signature to verify.
+ * @returns The parsed SiwE message.
+ * @throws Error if the message is invalid or the signature is invalid.
  */
-export function SiweAuth(options: SiweAuthOptions) {
-    return ExpressAuth(makeAuthConfig(options));
+async function parseAndVerifyMessage(message: string, signature: string): Promise<SiweMessage> {
+    const parsedMessage = parseMessage(message);
+    if (!parsedMessage) {
+        throw new Error("Invalid message");
+    }
+
+    const isValid = await verify({message, signature});
+    if (!isValid) {
+        throw new Error("Invalid signature");
+    }
+
+    return parsedMessage;
 }
 
 
