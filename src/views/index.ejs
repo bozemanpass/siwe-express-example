@@ -70,7 +70,6 @@
                 })
             });
 
-            console.log(result.url);
             if (result.status !== 200 || result.url.indexOf("/error") >= 0) {
                 // Show a specific error page if we were told about it, else generic.
                 window.location = (result.url.indexOf("/error") >= 0) ? result.url : "/error";

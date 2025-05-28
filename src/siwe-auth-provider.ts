@@ -1,6 +1,6 @@
 import Credentials, { CredentialsConfig } from "@auth/core/providers/credentials";
 import {AccessDenied} from "@auth/core/errors";
-import {AuthError, ExpressAuth, ExpressAuthConfig, User} from "@auth/express";
+import {ExpressAuth, ExpressAuthConfig, User} from "@auth/express";
 import {parseMessage, SiweMessage, verify} from "simple-siwe"
 import {SessionData, Store} from "express-session";
 import cookie from "cookie";
@@ -75,17 +75,12 @@ export function SiweAuthProvider(options: SiweAuthOptions): CredentialsConfig {
     return Credentials({
         name: "SIWE",
         credentials: {
-            message: {label: "Message", type: "text", placeholder: "0x0"},
-            signature: {label: "Signature", type: "text", placeholder: "0x0"},
-            session: {label: "", type: "object", placeholder: ""},
-            sid: {label: "", type: "text", placeholder: ""},
+            message: {type: "text"},
+            signature: {type: "text"},
+            session: {type: "text"},
+            sid: {type: "text"},
         },
         async authorize(credentials, req) {
-            if (credentials.session) {
-                throw new AuthError("Session should not be provided in credentials, it will be extracted from the request.");
-                return null;
-            }
-
             const { message, signature } = credentials as { message: string; signature: string };
             const parsedMessage = await parseAndVerifyMessage(message, signature);
             const sid = getSessionIdFromRequest(req);
@@ -116,8 +111,14 @@ export function SiweAuthProvider(options: SiweAuthOptions): CredentialsConfig {
  * @returns ExpressAuthConfig
  */
 export function makeAuthConfig(options: SiweAuthOptions): ExpressAuthConfig {
+    const pages = {
+        signIn: "error",
+        signOut: "error",
+        ...(options.pages || {}),
+    }
     return {
         ...options,
+        pages,
         providers: [
             SiweAuthProvider(options)
         ],
