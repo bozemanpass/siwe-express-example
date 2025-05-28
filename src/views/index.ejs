@@ -206,17 +206,17 @@
         <button id="logout" class="major">Sign-out</button>
         <div class="button-group">
             <% if (whitelistRequired) { %>
-                <button id="blacklist" class="small">Blacklist Address</button>
+                <button id="blacklist" class="small">Blacklist Account</button>
             <% } %>
         </div>
     <% } else { %>
         <button id="login" class="major">Sign-in with Ethereum</button>
         <div class="button-group">
             <% if (whitelistRequired) { %>
-                <button id="whitelist" class="small">Whitelist Address</button>
+                <button id="whitelist" class="small">Whitelist Account</button>
             <% } %>
             <% if (minimumBalanceRequired) { %>
-                <button id="faucet" class="small">Fund Address</button>
+                <button id="faucet" class="small">Fund Account</button>
             <% } %>
         </div>
     <% } %>
