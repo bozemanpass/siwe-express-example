@@ -64,15 +64,14 @@ const authOptions: SiweAuthOptions = {
         whitelistRequired ? addressListedInContract(process.env.WHITELIST_CONTRACT_ADDRESS!, ethProvider) : sayYes,
 
         // Check that the account has the minimum required balance (<= "0" means no requirement).
-        minimumBalanceRequired ?
-            minimumBalance(BigInt(process.env.MINIMUM_ACCOUNT_BALANCE!), ethProvider) : sayYes
+        minimumBalanceRequired ? minimumBalance(BigInt(process.env.MINIMUM_ACCOUNT_BALANCE!), ethProvider) : sayYes
     ],
     userLoader: {
         name: 'memory', // This is where you would load the user from your database, but we'll just simulate that here.
         load: async (uid: string) => ({ id: uid, name: uid, email: `${uid}@example.com` })
     },
     pages: {
-        "error": "/error"
+        error: "/error"
     }
 };
 
