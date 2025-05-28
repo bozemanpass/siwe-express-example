@@ -112,8 +112,8 @@ export function SiweAuthProvider(options: SiweAuthOptions): CredentialsConfig {
  */
 export function makeAuthConfig(options: SiweAuthOptions): ExpressAuthConfig {
     const pages = {
-        signIn: "error",
-        signOut: "error",
+        signIn: "/",
+        signOut: "/",
         ...(options.pages || {}),
     }
     return {
