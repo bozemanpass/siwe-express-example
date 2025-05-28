@@ -104,43 +104,84 @@
 
         // These functions are used to whitelist and fund the address.  They are purely to make the demo
         // easier to use.  In any real application you would not want to do this, as they are completely insecure.
+        function displaySpinner() {
+            // Show the spinner overlay
+            const overlay = document.getElementById("spinner-overlay");
+            overlay.style.display = "flex";
+        }
+
+        function removeSpinner() {
+            const overlay = document.getElementById("spinner-overlay");
+            overlay.style.display = "none";
+        }
+
         async function whitelistAddress(event) {
-            document.querySelector("#whitelist").disabled = true;
-            const address = await getEthAccount();
-            await fetch("/faucet/whitelist", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({address})
-            });
-            document.querySelector("#whitelist").remove()
+            try {
+                displaySpinner();
+                document.querySelector("#whitelist").disabled = true;
+                const address = await getEthAccount();
+                const result = await fetch("/faucet/whitelist", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({address})
+                });
+                if (result.status !== 200) {
+                    throw new Error(await result.text());
+                }
+                document.querySelector("#whitelist").remove()
+            } catch (err) {
+                error("An error occurred while whitelisting the address: " + err.message);
+            } finally {
+                removeSpinner();
+            }
         }
 
         async function blacklistAddress() {
-            document.querySelector("#blacklist").disabled = true;
-            const address = await getEthAccount();
-            await fetch("/faucet/blacklist", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({address})
-            });
-            await siweLogout();
+            try {
+                displaySpinner();
+                document.querySelector("#blacklist").disabled = true;
+                const address = await getEthAccount();
+                const result = await fetch("/faucet/blacklist", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({address})
+                });
+                if (result.status !== 200) {
+                    throw new Error(await result.text());
+                }
+                await siweLogout();
+            } catch (err) {
+                error("An error occurred blacklisting account: " + err.message);
+            } finally {
+                removeSpinner();
+            }
         }
 
         async function faucet() {
-            document.querySelector("#faucet").disabled = true;
-            const address = await getEthAccount();
-            await fetch("/faucet/fund", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({address})
-            });
-            document.querySelector("#faucet").remove();
+            try {
+                displaySpinner();
+                document.querySelector("#faucet").disabled = true;
+                const address = await getEthAccount();
+                const result = await fetch("/faucet/fund", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({address})
+                });
+                if (result.status !== 200) {
+                    throw new Error(await result.text());
+                }
+                document.querySelector("#faucet").remove();
+            } catch (err) {
+                error("An error occurred sending funds: " + err.message);
+            } finally {
+                removeSpinner();
+            }
         }
 
         // Attach event listeners to buttons.
@@ -154,6 +195,10 @@
     </script>
 </head>
 <body>
+<div id="spinner-overlay" style="display: none;">
+    <div class="spinner"></div>
+    <p>Please wait until the transaction has been confirmed...</p>
+</div>
 <div class="container">
     <img style="width: 100%" src="images/Gemini_Generated_Image_6pqg396pqg396pqg.png"/>
     <% if (user) { %>

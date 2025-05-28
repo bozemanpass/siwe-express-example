@@ -1,4 +1,4 @@
-import {ethers} from "ethers";
+import {ethers, CallExceptionError} from "ethers";
 import express, {Request, Response} from "express";
 import session, {MemoryStore} from "express-session";
 import path from "path";
@@ -124,8 +124,12 @@ app.post("/faucet/whitelist", async (req: Request, res: Response) => {
         await whitelistAddress(address, ethProvider);
         res.status(200).json({ "ok": true });
     } catch (e) {
-        console.error(e);
-        res.status(500).json({ "ok": false, error: e });
+        if ((e as CallExceptionError).reason === "Address is already in the list") {
+            res.status(200).json({ "ok": true });
+        } else {
+            console.error(e);
+            res.status(500).json({"ok": false, error: e});
+        }
     }
 });
 
