@@ -1,23 +1,27 @@
 import {ethers, Provider} from "ethers";
 
-import {SigninChecker} from "../siwe-auth-provider.js";
+import {SiweCheck} from "../siwe-auth-provider.js";
 
 // @ts-expect-error  This path will be correct at runtime, but not at build time.
 import contractAbi from "../contracts/contracts_AddressList_sol_AddressList.abi.json" with { type: "json" };
+import {SiweMessage} from "simple-siwe";
 
 /**
  * Checks if the chain ID of the provider matches the chain ID of the SiwE message.
  * @param provider - The provider to use to determine the chain ID.
  * @returns a function that checks if the chain IDs match.
  */
-export function sameNetwork(provider: Provider): SigninChecker {
-    return async (address: string, chainId: bigint) => {
-        const network = await provider.getNetwork();
-        if (network.chainId !== chainId) {
-            console.log(`Chain ID mismatch: expected ${network.chainId}, got ${chainId}`);
-            return false;
+export function sameNetwork(provider: Provider): SiweCheck {
+    return {
+        name: "sameNetwork",
+        check: async (message) => {
+            const network = await provider.getNetwork();
+            if (network.chainId !== BigInt(message.chainId)) {
+                console.log(`Chain ID mismatch: expected ${network.chainId}, got ${message.chainId}`);
+                return false;
+            }
+            return true;
         }
-        return true;
     }
 }
 
@@ -27,16 +31,20 @@ export function sameNetwork(provider: Provider): SigninChecker {
  * @param provider - The provider to use to call the contract.
  * @returns a function that checks if the address is listed in the contract.
  */
-export function addressListedInContract(contractAddress: string, provider?: Provider): SigninChecker {
+export function addressListedInContract(contractAddress: string, provider?: Provider): SiweCheck {
     const contract = new ethers.Contract(contractAddress, contractAbi, provider);
-    return async (address: string, chainId: bigint) => {
-        const ret = await contract.isAddressInList(address);
-        if (ret) {
-            console.log(`Address ${address} is in contract ${contractAddress} on chain ${chainId}`)
-        } else {
-            console.log(`Address ${address} is NOT in contract ${contractAddress} on chain ${chainId}`)
+
+    return {
+        name: "whitelist",
+        check: async (message) => {
+            const ret = await contract.isAddressInList(message.address);
+            if (ret) {
+                console.log(`Address ${message.address} is in contract ${contractAddress}`)
+            } else {
+                console.log(`Address ${message.address} is NOT in contract ${contractAddress}`)
+            }
+            return ret;
         }
-        return ret;
     }
 }
 
@@ -46,25 +54,31 @@ export function addressListedInContract(contractAddress: string, provider?: Prov
  * @param provider - The provider to use to check the balance.
  * @returns a function that checks if the address has the minimum required balance.
  */
-export function minimumBalance(minBalance: bigint, provider: Provider): SigninChecker {
-    return async (address: string) => {
-        if (minBalance <= 0n) {
-            return true;
-        }
+export function minimumBalance(minBalance: bigint, provider: Provider): SiweCheck {
+    return {
+        name: 'minBalance',
+        check: async (message: SiweMessage) => {
+            if (minBalance <= 0n) {
+                return true;
+            }
 
-        const balance = await provider.getBalance(address);
-        if (balance >= minBalance) {
-            console.log(`Address ${address} balance ${balance} >= ${minBalance}`)
-            return true;
-        }
+            const balance = await provider.getBalance(message.address);
+            if (balance >= minBalance) {
+                console.log(`Address ${message.address} balance ${balance} >= ${minBalance}`)
+                return true;
+            }
 
-        console.log(`Address ${address} balance ${balance} less than minimum required balance ${minBalance}`)
-        return false;
+            console.log(`Address ${message.address} balance ${balance} less than minimum required balance ${minBalance}`)
+            return false;
+        }
     }
 }
 
 /**
- * A dummy function that always returns true.
+ * A dummy SiweCheck that always returns true.
  * @returns true
  */
-export const sayYes = async () => true;
+export const sayYes = {
+    name: 'yes',
+    check: async() => true
+}

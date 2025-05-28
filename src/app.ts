@@ -6,7 +6,6 @@ import {generateNonce } from "simple-siwe";
 import { fileURLToPath } from "url";
 
 import {sameNetwork, addressListedInContract, minimumBalance, sayYes} from "./checks/eth-checks.js";
-import {matchSessionNonce} from "./checks/nonce-checks.js";
 import {authenticatedUser, currentSession} from "./authjs-middleware.js";
 import {SiweAuth, SiweAuthOptions} from "./siwe-auth-provider.js";
 
@@ -15,6 +14,7 @@ import {faucet, whitelistAddress, blacklistAddress} from "./demo/faucet.js";
 declare module "express-session" {
     interface SessionData {
         nonce: string;
+        error?: Error | null;
     }
 }
 
@@ -55,10 +55,7 @@ const minimumBalanceRequired = BigInt(process.env.MINIMUM_ACCOUNT_BALANCE || "0"
 
 // Specify SiwE authentication checks and options
 const authOptions: SiweAuthOptions = {
-    messageChecks: [
-        // Check that the message nonce is the same as the one tied to this session.
-        matchSessionNonce(sessionStore)
-    ],
+    sessionStore: sessionStore,
     signinChecks: [
         // Check that the SiwE message chain ID is the same as our provider's chain ID.
         sameNetworkRequired ? sameNetwork(ethProvider) : sayYes,
@@ -70,13 +67,12 @@ const authOptions: SiweAuthOptions = {
         minimumBalanceRequired ?
             minimumBalance(BigInt(process.env.MINIMUM_ACCOUNT_BALANCE!), ethProvider) : sayYes
     ],
-    userLoader: async (uid: string) => {
-        // This is where you would load the user from your database, but we'll just simulate that here.
-        return {
-            id: uid,
-            name: uid,
-            email: `${uid}@example.com`,
-        }
+    userLoader: {
+        name: 'memory', // This is where you would load the user from your database, but we'll just simulate that here.
+        load: async (uid: string) => ({ id: uid, name: uid, email: `${uid}@example.com` })
+    },
+    pages: {
+        "error": "/error"
     }
 };
 
@@ -99,6 +95,20 @@ app.get("/", (req: Request, res: Response) => {
 // Protected route (to demonstrate a route requiring authentication)
 app.get("/protected", authenticatedUser(authOptions), (req: Request, res: Response) => {
     res.render("protected.ejs", { user: res.locals.session?.user.id });
+});
+
+// Custom error route
+app.get("/error", (req: Request, res: Response) => {
+    const error = req.session?.error || res.locals?.session?.error;
+
+    res.render("error.ejs", {
+        user: res.locals?.session?.user.id,
+        error: error,
+        whitelistContractAddress: process.env.WHITELIST_CONTRACT_ADDRESS,
+        whitelistRequired,
+        sameNetworkRequired,
+        minimumBalanceRequired,
+    });
 });
 
 // nonce route (needs to be called by the client before signing the SiwE message)

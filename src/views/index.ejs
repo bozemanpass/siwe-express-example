@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <title>SiwE Example</title>
+    <link rel="stylesheet" href="css/siwe.css"/>
     <script type="module">
         import {prepareMessage} from 'https://cdn.jsdelivr.net/npm/simple-siwe@0.1.4/+esm'
 
@@ -69,12 +70,10 @@
                 })
             });
 
-            if (result.status !== 200) {
+            console.log(result.url);
+            if (result.status !== 200 || result.url.indexOf("/error") >= 0) {
                 // Show a specific error page if we were told about it, else generic.
-                window.location = (result.url.indexOf("/siwe/auth/error") >= 0) ? result.url : "/siwe/auth/error";
-            } else if (result.url.indexOf("error=CredentialsSignin") >= 0) {
-                // When authorize() returns null the status can still be 200, but for our purposes it is still an error.
-                window.location = "/siwe/auth/error";
+                window.location = (result.url.indexOf("/error") >= 0) ? result.url : "/error";
             } else {
                 // Reload the current page
                 window.location.reload();
@@ -97,7 +96,7 @@
 
             if (result.status !== 200) {
                 // Show a specific error page if we were told about it, else generic.
-                window.location = (result.url.indexOf("/siwe/auth/error") >= 0) ? result.url : "/siwe/auth/error";
+                window.location = (result.url.indexOf("/error") >= 0) ? result.url : "/error";
             } else {
                 // Reload the current page
                 window.location.reload();
@@ -154,94 +153,6 @@
             document.querySelector('#faucet')?.addEventListener("click", faucet);
         });
     </script>
-    <style>
-        body {
-            font-family: Rajdhani, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #ffffff; /* White background */
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .container {
-            text-align: center;
-            background: #000000; /* Grey/blue background for the box */
-            border-radius: 15px; /* Rounded edges */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding-top: 15px;
-            padding-bottom: 15px;
-            min-height: 420px;
-            width: 700px;
-        }
-
-        button {
-            background-color: #000000; /* Medium blue/gray for buttons */
-            color: #edf2f7; /* Light text color */
-            border: white 2px solid;
-            padding: 10px 20px;
-            font-size: 1rem;
-            border-radius: 0;
-            cursor: pointer;
-            margin: 10px auto; /* Center the button */
-            transition: background-color 0.3s ease;
-            display: block; /* Ensure buttons are on their own row */
-            width: 100%; /* Full width for larger buttons */
-            max-width: 230px; /* Limit the width */
-            text-align: center;
-            font-variant: all-petite-caps;
-        }
-
-        button.major {
-            height: 3.5em;
-        }
-
-        button.small {
-            border: white 1px solid;
-            font-size: 0.9rem; /* Smaller font size for smaller buttons */
-            padding: 8px 16px;
-            max-width: 170px; /* Smaller width for smaller buttons */
-        }
-
-        button:hover {
-            transform: scale(1.1); /* Grow the button by 10% */
-            transition: transform 0.2s ease, background-color 0.3s ease; /* Smooth transition */
-        }
-
-        button:disabled {
-            color: #a0aec0; /* Muted gray for disabled buttons */
-            border-color: #a0aec0;
-            cursor: not-allowed;
-        }
-
-        .button-group {
-            display: flex;
-            justify-content: center; /* Center the group */
-            gap: 10px; /* Space between buttons */
-        }
-
-        a {
-            color: #a0aec0; /* Light blue for links */
-        }
-
-        #error {
-            font-size: 1rem;
-            margin-bottom: 20px;
-            text-align: center;
-            color: #e53e3e; /* Red for error messages */
-        }
-
-        .user {
-            color: white;
-        }
-
-        .footer {
-            margin-top: 1em;
-        }
-    </style>
 </head>
 <body>
 <div class="container">
