@@ -18,6 +18,7 @@ export type UserLoader = {
  */
 export type SiweCheck = {
     name: string,
+    denialMessage?: string,
     check: (message: SiweMessage) => Promise<boolean>;
 }
 
@@ -36,11 +37,11 @@ export type SiweAuthOptions = Partial<ExpressAuthConfig> & {
  * Extends the AccessDenied error from Auth.js.
  */
 export class SiweAccessDenied extends AccessDenied {
-    messageToShowUser: string | undefined;
-    constructor(name: string, messageToShowUser?: string) {
-        super(messageToShowUser || name);
+    denialMessage: string | undefined;
+    constructor(name: string, denialMessage?: string) {
+        super(denialMessage || name);
         this.name = name;
-        this.messageToShowUser = messageToShowUser;
+        this.denialMessage = denialMessage;
     }
 }
 
@@ -125,7 +126,7 @@ export function makeAuthConfig(options: SiweAuthOptions): ExpressAuthConfig {
                     try {
                         for (const checker of options.signinChecks) {
                             if (!await checker.check(parsedMessage)) {
-                                await saveErrorInSession(sid, session, options.sessionStore, new SiweAccessDenied(checker.name));
+                                await saveErrorInSession(sid, session, options.sessionStore, new SiweAccessDenied(checker.name, checker.denialMessage));
                                 return false;
                             }
                         }

@@ -14,6 +14,7 @@ import {SiweMessage} from "simple-siwe";
 export function sameNetwork(provider: Provider): SiweCheck {
     return {
         name: "sameNetwork",
+        denialMessage: "The provided chain ID does not match the expected network.",
         check: async (message) => {
             const network = await provider.getNetwork();
             if (network.chainId !== BigInt(message.chainId)) {
@@ -36,6 +37,7 @@ export function addressListedInContract(contractAddress: string, provider?: Prov
 
     return {
         name: "whitelist",
+        denialMessage: "The account has not been whitelisted.",
         check: async (message) => {
             const ret = await contract.isAddressInList(message.address);
             if (ret) {
@@ -57,6 +59,7 @@ export function addressListedInContract(contractAddress: string, provider?: Prov
 export function minimumBalance(minBalance: bigint, provider: Provider): SiweCheck {
     return {
         name: 'minBalance',
+        denialMessage: "The account does not have the required minimum balance.",
         check: async (message: SiweMessage) => {
             if (minBalance <= 0n) {
                 return true;
