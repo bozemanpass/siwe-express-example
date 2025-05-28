@@ -98,11 +98,9 @@ app.get("/protected", authenticatedUser(authOptions), (req: Request, res: Respon
 
 // Custom error route
 app.get("/error", (req: Request, res: Response) => {
-    const error = req.session?.error || res.locals?.session?.error;
-
     res.render("error.ejs", {
         user: res.locals?.session?.user.id,
-        error: error,
+        error: req.session?.error || res.locals?.session?.error,
     });
 });
 
