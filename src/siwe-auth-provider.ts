@@ -36,9 +36,11 @@ export type SiweAuthOptions = Partial<ExpressAuthConfig> & {
  * Extends the AccessDenied error from Auth.js.
  */
 export class SiweAccessDenied extends AccessDenied {
-    constructor(name: string) {
-        super(name);
+    messageToShowUser: string | undefined;
+    constructor(name: string, messageToShowUser?: string) {
+        super(messageToShowUser || name);
         this.name = name;
+        this.messageToShowUser = messageToShowUser;
     }
 }
 
