@@ -6,8 +6,11 @@ body {
     color: #333;
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding-top: 40px; /* Fixed padding from top */
+    overflow-y: auto; /* Only show scrollbar when needed */
+    box-sizing: border-box; /* Include padding in height calculation */
 }
 
 .container {
@@ -122,8 +125,8 @@ a {
 
 .corner-logo {
     position: fixed;
-    max-width: 120px;
-    max-height: 120px;
+    max-width: 75px;
+    max-height: 75px;
     height: auto;
     z-index: 0;
     bottom: 20px;
@@ -137,7 +140,7 @@ a {
     right: 20px;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 875px) {
     .corner-logo {
         z-index: -100;
     }
