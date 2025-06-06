@@ -125,7 +125,7 @@ a {
     max-width: 120px;
     max-height: 120px;
     height: auto;
-    z-index: -100;
+    z-index: 0;
     bottom: 20px;
 }
 
@@ -135,4 +135,10 @@ a {
 
 .bottom-right {
     right: 20px;
+}
+
+@media (max-width: 1000px) {
+    .corner-logo {
+        z-index: -100;
+    }
 }
