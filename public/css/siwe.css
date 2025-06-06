@@ -126,7 +126,7 @@ a {
 .corner-logo {
     position: fixed;
     max-width: 75px;
-    max-height: 75px;
+    max-height: 55px;
     height: auto;
     z-index: 0;
     bottom: 20px;
