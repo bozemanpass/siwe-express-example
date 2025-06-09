@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ -z "$WHITELIST_CONTRACT_ADDRESS" ]] && [[ ${REQUIRE_WHITELISTED_ACCOUNTS:-false} != "false" ]]; then
+if [[ -z "$WHITELIST_CONTRACT_ADDRESS" ]] && [[ ${REQUIRE_WHITELISTED_ACCOUNTS:-true} != "false" ]]; then
   while [ ! -f /app/AddressList.deploy.json ]; do
     echo "Waiting for AddressList contract to be deployed ..."
     sleep 1
