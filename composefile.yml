@@ -2,7 +2,14 @@ services:
   siwe:
     image: bpi/siwe-express-example:stack
     environment:
-      REQUIRE_WHITELISTED_ACCOUNTS: true
-    build: .
+      AUTH_SECRET: ${AUTH_SECRET:-verysecret}
+      ETHEREUM_RPC_URL: ${ETHEREUM_RPC_URL:-http://localhost:8545}
+      FAUCET_PRIVATE_KEY: ${FAUCET_PRIVATE_KEY}
+      LISTEN_ADDR: ${LISTEN_ADDR:-0.0.0.0}
+      LISTEN_PORT: ${LISTEN_PORT:-3200}
+      MINIMUM_ACCOUNT_BALANCE: ${MINIMUM_ACCOUNT_BALANCE:-0}
+      REQUIRE_SAME_NETWORK: ${REQUIRE_SAME_NETWORK:-false}
+      SESSION_SECRET_KEY: ${SESSION_SECRET_KEY:-verysecret}
+      WHITELIST_CONTRACT_ADDRESS: ${WHITELIST_CONTRACT_ADDRESS}
     ports:
       - "3200"
