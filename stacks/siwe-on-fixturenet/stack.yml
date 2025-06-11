@@ -2,6 +2,6 @@ requires:
   stacks:
     - ref: bozemanpass/fixturenet-eth-stack
       path: stacks/fixturenet-eth
-      http-prefix: /eth
+      http-proxy-prefix: /eth
     - ref: bozemanpass/siwe-express-example
       path: stacks/siwe-express-example
