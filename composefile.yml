@@ -13,4 +13,4 @@ services:
       SESSION_SECRET_KEY: ${SESSION_SECRET_KEY}
       WHITELIST_CONTRACT_ADDRESS: ${WHITELIST_CONTRACT_ADDRESS}
     ports:
-      - "3200" # @stack http-proxy
+      - "3200" # @stack http-proxy /
