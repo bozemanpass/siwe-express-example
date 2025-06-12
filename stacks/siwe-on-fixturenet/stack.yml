@@ -5,3 +5,4 @@ requires:
       http-proxy-prefix: /eth
     - ref: bozemanpass/siwe-express-example
       path: stacks/siwe-express-example
+      http-proxy-prefix: /
