@@ -4,13 +4,13 @@ if [[ -n "$BPI_SCRIPT_DEBUG" ]]; then
     set -x
 fi
 
-if [[ -f "${BPI_SO_DEPLOYMENT_DIR}/.init_complete" ]]; then
-  echo "Initialization complete (if this is wrong, remove ${BPI_SO_DEPLOYMENT_DIR}/.init_complete and restart the stack)."
+if [[ -f "${STACK_DEPLOYMENT_DIR}/.init_complete" ]]; then
+  echo "Initialization complete (if this is wrong, remove ${STACK_DEPLOYMENT_DIR}/.init_complete and restart the stack)."
   exit 0
 fi
 
 while true; do
-  stack manage --dir ${BPI_SO_DEPLOYMENT_DIR} status | grep "\-siwe\-" | grep -i 'running'
+  stack manage --dir ${STACK_DEPLOYMENT_DIR} status | grep "\-siwe\-" | grep -i 'running'
   if [ $? -eq 0 ]; then
     echo "Stack is running, proceeding with contract deployment."
     break
@@ -20,13 +20,13 @@ while true; do
   fi
 done
 
-EXEC_CMD="stack manage --dir ${BPI_SO_DEPLOYMENT_DIR} exec siwe"
+EXEC_CMD="stack manage --dir ${STACK_DEPLOYMENT_DIR} exec siwe"
 
 # Check if the stack is running in fixturenet
 STACK_SVC_FXETH_GETH_1=$( $EXEC_CMD "echo \${STACK_SVC_FXETH_GETH_1}" )
 if [[ -z "$STACK_SVC_FXETH_GETH_1" ]]; then
   echo "Not running in fixturenet, skipping contract deployment."
-  touch "${BPI_SO_DEPLOYMENT_DIR}/.init_complete"
+  touch "${STACK_DEPLOYMENT_DIR}/.init_complete"
   exit 0
 fi
 
@@ -62,4 +62,4 @@ echo "Deploying AddressList contract..."
 $EXEC_CMD "forge create --rpc-url http://\${STACK_SVC_FXETH_GETH_1}:8545 --private-key 888814df89c4358d7ddb3fa4b0213e7331239a80e1f013eaa7b2deca2a41a218 /app/contracts/AddressList.sol:AddressList --json > /tmp/deploy.json.$$ && cp -f /tmp/deploy.json.$$ /app/AddressList.deploy.json"
 
 echo "Success, AddressList contract deployed"
-touch "${BPI_SO_DEPLOYMENT_DIR}/.init_complete"
+touch "${STACK_DEPLOYMENT_DIR}/.init_complete"
