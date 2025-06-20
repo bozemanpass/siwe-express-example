@@ -1,3 +1,4 @@
+name: siwe-on-fixturenet
 requires:
   stacks:
     - ref: bozemanpass/fixturenet-eth-stack
