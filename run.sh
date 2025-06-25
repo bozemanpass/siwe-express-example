@@ -7,11 +7,11 @@ if [[ -z "$REQUIRE_WHITELISTED_ACCOUNTS" ]]; then
 fi
 
 if [[ -z "$WHITELIST_CONTRACT_ADDRESS" ]] && [[ ${REQUIRE_WHITELISTED_ACCOUNTS} == "true" ]]; then
-  while [ ! -f /app/AddressList.deploy.json ]; do
+  while [ ! -f /data/AddressList.deploy.json ]; do
     echo "Waiting for AddressList contract to be deployed ..."
     sleep 1
   done
-  WHITELIST_CONTRACT_ADDRESS=$(jq -r '.deployedTo' /app/AddressList.deploy.json)
+  WHITELIST_CONTRACT_ADDRESS=$(jq -r '.deployedTo' /data/AddressList.deploy.json)
 fi
 
 export WHITELIST_CONTRACT_ADDRESS

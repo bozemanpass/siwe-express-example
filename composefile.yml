@@ -12,5 +12,10 @@ services:
       REQUIRE_WHITELISTED_ACCOUNTS: ${REQUIRE_WHITELISTED_ACCOUNTS}
       SESSION_SECRET_KEY: ${SESSION_SECRET_KEY}
       WHITELIST_CONTRACT_ADDRESS: ${WHITELIST_CONTRACT_ADDRESS}
+    volumes:
+      - siwe-data:/data
     ports:
       - "3200" # @stack http-proxy /
+
+volumes:
+  siwe-data:
