@@ -1,6 +1,6 @@
 services:
   siwe:
-    image: bpi/siwe-express-example:stack
+    image: bozemanpass/siwe-express-example:stack
     environment:
       AUTH_SECRET: ${AUTH_SECRET}
       ETHEREUM_RPC_URL: ${ETHEREUM_RPC_URL}
