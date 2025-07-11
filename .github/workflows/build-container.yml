@@ -20,7 +20,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/${{ github.repository }}/siwe-express-example
+            ghcr.io/${{ github.repository }}
           tags: |
             type=sha,enable=true,priority=100,prefix=,suffix=,format=long
             # if is in MAIN branch, also tag as latest
