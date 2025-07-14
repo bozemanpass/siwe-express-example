@@ -2,6 +2,8 @@ name: siwe-express-example
 description: "siwe-express-example"
 containers:
   - name: bozemanpass/siwe-express-example
+    ref: .
+    path: .
 pods:
   - name: siwe-express-example
     post_start_command: "./scripts/deploy-contract.sh"
