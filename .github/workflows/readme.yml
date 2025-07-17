@@ -17,6 +17,9 @@ jobs:
           wget -O /tmp/stack.$$ https://github.com/bozemanpass/stack/releases/latest/download/stack
           mv /tmp/stack.$$ /usr/local/bin/stack
           chmod a+x /usr/local/bin/stack
+      - name: Get other repos as needed
+        run: |-
+          stack prepare --stack stacks/siwe-express-example --build-policy fetch-repos
       - name: Run update script
         run: |-
           scripts/update-chart.sh
