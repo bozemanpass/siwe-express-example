@@ -16,7 +16,7 @@ $ stack fetch repo bozemanpass/siwe-express-example
 # Build/download all the containers.
 $ stack prepare --stack siwe-on-fixturenet
 
-# Deploy it
+# Deploy and run it.
 $ stack init --stack siwe-on-fixturenet --output siwe.yml
 $ stack deploy --spec-file siwe.yml --deployment-dir ~/siwe
 $ stack manage --dir ~/siwe start
@@ -26,7 +26,6 @@ This will fire up a local blockchain, deploy the smart contract, and start the a
 will be randomly selected, but you can show it easily by running:
 
 ```
-# Show what port on the host is point at siwe:3200.
 $ stack manage --dir ~/siwe port siwe 3200
 0.0.0.0:62241
 ```
