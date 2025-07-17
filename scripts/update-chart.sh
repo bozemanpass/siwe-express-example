@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 FILE=README.md
 
 CHART_BEGIN=$(grep -n 'CHART_BEGIN' $FILE | head -1 | cut -d':' -f1)
