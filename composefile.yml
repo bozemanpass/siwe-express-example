@@ -1,6 +1,7 @@
 services:
   siwe:
     image: bozemanpass/siwe-express-example:stack
+    user: ${STACK_HOST_UID}:${STACK_HOST_GID}
     environment:
       AUTH_SECRET: ${AUTH_SECRET}
       ETHEREUM_RPC_URL: ${ETHEREUM_RPC_URL}
