@@ -59,7 +59,7 @@ done
 set -e
 
 echo "Deploying AddressList contract..."
-$EXEC_CMD "forge create --no-cache --out /tmp/forge.$$ --rpc-url http://\${STACK_SVC_FXETH_GETH_1}:8545 --private-key 888814df89c4358d7ddb3fa4b0213e7331239a80e1f013eaa7b2deca2a41a218 /app/contracts/AddressList.sol:AddressList --json > /tmp/forge.$$/deploy.json.$$ && cp -f /tmp/forge.$$/deploy.json.$$ /data/AddressList.deploy.json"
+$EXEC_CMD "mkdir /tmp/forge.$$ && forge create --no-cache --out /tmp/forge.$$ --rpc-url http://\${STACK_SVC_FXETH_GETH_1}:8545 --private-key 888814df89c4358d7ddb3fa4b0213e7331239a80e1f013eaa7b2deca2a41a218 /app/contracts/AddressList.sol:AddressList --json > /tmp/forge.$$/deploy.json.$$ && cp -f /tmp/forge.$$/deploy.json.$$ /data/AddressList.deploy.json && rm -rf /tmp/forge.$$"
 
 echo "Success, AddressList contract deployed"
 touch "${STACK_DEPLOYMENT_DIR}/.init_complete"
