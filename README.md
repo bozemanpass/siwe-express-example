@@ -31,7 +31,7 @@ $ stack manage --dir ~/siwe port siwe 3200
 ```
 
 ## System Diagram
-
+Auto-generated using the `stack chart` command:
 <!-- CHART_BEGIN -->
 ```mermaid
 flowchart RL
