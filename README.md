@@ -35,8 +35,8 @@ Auto-generated using the `stack chart` command:
 <!-- CHART_BEGIN -->
 ```mermaid
 flowchart RL
-  fixturenet-eth-fxeth-geth-1-http>:8545]:::http_target
-  siwe-express-example-siwe-http>:3200]:::http_target
+  fixturenet-eth-fxeth-geth-1-http>":8545 (/eth/)"]:::http_target
+  siwe-express-example-siwe-http>":3200 (/)"]:::http_target
   fixturenet-eth-fxeth-geth-1-http --> fixturenet-eth-fxeth-geth-1
   siwe-express-example-siwe-http --> siwe-express-example-siwe
   fixturenet-eth --> siwe-express-example
